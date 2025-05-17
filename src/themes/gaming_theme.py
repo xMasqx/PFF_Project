@@ -267,6 +267,12 @@ class GamingTheme(BaseTheme):
                     border-bottom: 2px solid var(--accent-color);
                     text-align: center;
                 }}
+                .gaming-footer img {{
+                    max-width: 100%;
+                    height: auto;
+                    border-radius: 8px;
+                    box-shadow: 0 0 20px var(--accent-color);
+                }}
                 </style>
                 <div class="gaming-bg-welcome"></div>
             ''', unsafe_allow_html=True)
@@ -295,52 +301,19 @@ class GamingTheme(BaseTheme):
             facing the final boss (market predictions).
         """)
 
-        # Display the footer GIF with debug information
+        # Display the footer GIF
         footer_gif_path = self.images.get('footer', '')
-        st.write("Debug - Footer GIF path:", footer_gif_path)
-        st.write("Debug - Footer GIF exists:", os.path.exists(footer_gif_path))
-        
         if os.path.exists(footer_gif_path):
-            try:
-                # Try to open the GIF to verify it's valid
-                with Image.open(footer_gif_path) as img:
-                    st.write("Debug - GIF format:", img.format)
-                    st.write("Debug - GIF size:", img.size)
-                    st.write("Debug - GIF mode:", img.mode)
-                
-                # Try displaying with base64 encoding
-                with open(footer_gif_path, 'rb') as f:
-                    gif_bytes = f.read()
-                    gif_base64 = base64.b64encode(gif_bytes).decode('utf-8')
-                
-                st.markdown(f'''
-                    <div class="gaming-footer">
-                        <img src="data:image/gif;base64,{gif_base64}" 
-                             style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 0 20px var(--accent-color);" />
-                    </div>
-                ''', unsafe_allow_html=True)
-                
-                # Also try Streamlit's native image display as a fallback
-                st.write("Debug - Attempting native image display...")
-                st.image(
-                    footer_gif_path,
-                    use_column_width=True,
-                    output_format="GIF",
-                    clamp=True
-                )
-                
-            except Exception as e:
-                st.error(f"Error displaying footer GIF: {str(e)}")
-                st.write("Debug - Full error:", str(e))
-                # Fallback to a static image if GIF fails
-                try:
-                    st.image(
-                        os.path.join(os.path.dirname(footer_gif_path), 'gaming_analysis.jpg'),
-                        use_column_width=True,
-                        caption="Gaming Theme Footer (Fallback)"
-                    )
-                except Exception as e2:
-                    st.error(f"Fallback image also failed: {str(e2)}")
+            # Get the relative path for the GIF
+            rel_path = os.path.relpath(footer_gif_path, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+            # Convert Windows path to URL format
+            rel_path = rel_path.replace('\\', '/')
+            
+            st.markdown(f'''
+                <div class="gaming-footer">
+                    <img src="/{rel_path}" alt="Gaming Theme Footer" />
+                </div>
+            ''', unsafe_allow_html=True)
         else:
             st.error(f"Footer GIF not found at path: {footer_gif_path}")
 
