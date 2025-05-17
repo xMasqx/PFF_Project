@@ -1,0 +1,11 @@
+streamlit>=1.24.0
+pandas>=2.0.0
+numpy>=1.24.0
+plotly>=5.13.0
+scikit-learn>=1.4.1
+yfinance>=0.2.36
+matplotlib>=3.8.3
+pillow>=10.2.0
+requests>=2.31.0
+python-dotenv>=1.0.1
+streamlit-extras>=0.3.5 
