@@ -253,6 +253,9 @@ class BaseTheme(ABC):
     def run_analysis(self, data: pd.DataFrame, analysis_type: str = 'regression'):
         """Run the selected analysis type on the data."""
         try:
+            # Set analysis state
+            st.session_state['analysis_run'] = True
+            
             # Data cleaning and debugging output
             st.write('Data head:', data.head())
             st.write('Data dtypes:', data.dtypes)
