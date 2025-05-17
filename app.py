@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "src")))
 import streamlit as st
 from src.themes.zombie_theme import ZombieTheme
 from src.themes.futuristic_theme import FuturisticTheme
