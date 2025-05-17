@@ -213,7 +213,7 @@ class DataLoader:
         df['OBV'] = (np.sign(df['Close'].diff()) * df['Volume']).fillna(0).cumsum()
         
         # Clean up NaN values
-        df = df.fillna(method='bfill').fillna(method='ffill')
+        df = df.bfill().ffill()
         
         return df
     
