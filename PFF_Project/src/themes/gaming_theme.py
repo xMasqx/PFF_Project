@@ -289,13 +289,8 @@ class GamingTheme(BaseTheme):
                 del st.session_state['analysis_run']
                 st.rerun()
             
-            # Debug information
-            st.write("Debug: Analysis state is active")
-            
             # Show the gaming_eldenring.gif at the bottom
             eldenring_gif_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'assets', 'gaming', 'gaming_eldenring.gif')
-            st.write(f"Debug: GIF path: {eldenring_gif_path}")
-            st.write(f"Debug: GIF exists: {os.path.exists(eldenring_gif_path)}")
             
             if os.path.exists(eldenring_gif_path):
                 try:
