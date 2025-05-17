@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: pff_project
+Version: 0.1.0
+Requires-Python: >=3.8
+Requires-Dist: streamlit
+Requires-Dist: pandas
+Requires-Dist: numpy
+Requires-Dist: plotly
+Requires-Dist: scikit-learn
+Requires-Dist: yfinance
+Dynamic: requires-dist
+Dynamic: requires-python
