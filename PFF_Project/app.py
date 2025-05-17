@@ -1,8 +1,8 @@
 import streamlit as st
-from pff_project.src.themes.zombie_theme import ZombieTheme
-from pff_project.src.themes.futuristic_theme import FuturisticTheme
-from pff_project.src.themes.got_theme import GoTTheme
-from pff_project.src.themes.gaming_theme import GamingTheme
+from src.themes.zombie_theme import ZombieTheme
+from src.themes.futuristic_theme import FuturisticTheme
+from src.themes.got_theme import GoTTheme
+from src.themes.gaming_theme import GamingTheme
 
 # Set page configuration
 st.set_page_config(
