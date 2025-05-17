@@ -230,7 +230,8 @@ class GamingTheme(BaseTheme):
             'header': os.path.join(assets_dir, 'gaming_header.gif'),
             'loading': os.path.join(assets_dir, 'gaming_loading.gif'),
             'success': os.path.join(assets_dir, 'gaming_success.gif'),
-            'error': os.path.join(assets_dir, 'gaming_error.gif')
+            'error': os.path.join(assets_dir, 'gaming_error.gif'),
+            'footer': os.path.join(assets_dir, 'gaming_eldenring.gif')
         }
     
     def run_theme(self) -> None:
@@ -257,6 +258,14 @@ class GamingTheme(BaseTheme):
                 .gaming-welcome-content {{
                     position: relative;
                     z-index: 1;
+                }}
+                .gaming-footer {{
+                    background: rgba(0,0,0,0.3);
+                    padding: 20px 0;
+                    margin-top: 30px;
+                    border-top: 2px solid var(--accent-color);
+                    border-bottom: 2px solid var(--accent-color);
+                    text-align: center;
                 }}
                 </style>
                 <div class="gaming-bg-welcome"></div>
