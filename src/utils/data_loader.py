@@ -47,6 +47,11 @@ class DataLoader:
             data['Date'] = pd.to_datetime(data['Date'])
             data = data.set_index('Date')
             
+            # Convert numeric columns to float32
+            numeric_cols = data.select_dtypes(include=[np.number]).columns
+            for col in numeric_cols:
+                data[col] = pd.to_numeric(data[col], errors='coerce').astype('float32')
+            
             # Cache the processed data
             self.cache[cache_key] = data.copy()
             return data
@@ -103,6 +108,11 @@ class DataLoader:
             df.index = pd.to_datetime(df.index)
         df = df.sort_index()
         
+        # Convert numeric columns to float32
+        numeric_cols = df.select_dtypes(include=[np.number]).columns
+        for col in numeric_cols:
+            df[col] = pd.to_numeric(df[col], errors='coerce').astype('float32')
+        
         if feature_columns is None:
             # Exclude target column from features if it's not explicitly included
             feature_columns = [col for col in df.select_dtypes(include=[np.number]).columns 
@@ -125,8 +135,8 @@ class DataLoader:
         valid_dates = valid_data.index
         
         # Convert to numpy arrays
-        X_array = valid_data[feature_columns].values
-        y_array = valid_data[target_column].values
+        X_array = valid_data[feature_columns].values.astype('float32')
+        y_array = valid_data[target_column].values.astype('float32')
         
         # Process target variable based on analysis type
         if analysis_type == 'classification':
@@ -240,11 +250,27 @@ class DataLoader:
         try:
             # Add support for different file formats
             if file_path.endswith('.csv'):
-                return pd.read_csv(file_path)
+                data = pd.read_csv(file_path)
             elif file_path.endswith('.xlsx'):
-                return pd.read_excel(file_path)
+                data = pd.read_excel(file_path)
             else:
                 raise ValueError("Unsupported file format. Please use .csv or .xlsx files.")
+            
+            # Convert numeric columns to float32
+            numeric_cols = data.select_dtypes(include=[np.number]).columns
+            for col in numeric_cols:
+                data[col] = pd.to_numeric(data[col], errors='coerce').astype('float32')
+            
+            # Convert date columns to datetime if they exist
+            date_cols = data.select_dtypes(include=['object']).columns
+            for col in date_cols:
+                try:
+                    data[col] = pd.to_datetime(data[col])
+                except:
+                    continue
+            
+            return data
+            
         except Exception as e:
             raise Exception(f"Error loading Kragle dataset: {str(e)}")
 
