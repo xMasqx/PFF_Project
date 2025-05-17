@@ -111,15 +111,13 @@ streamlit run app.py
 
 ## 🤝 Contributing
 
-This is a group project with specific contributions from each team member. Please refer to the project documentation for contribution guidelines.
+This is a group project with specific contributions from each team member. I22-2261 and I22-2742 are the group members.
 
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 👥 Team Members
 
-[Team member names and roles to be added]
+Hamza Farooq (Futuristic Theme and main app troubleshooting)
+Hamza Farooq Qureshi (Gaming Theme, GOT Theme, Zombie Theme and app framework development)
 
 ## 📅 Submission Deadline
 
