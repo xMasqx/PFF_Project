@@ -288,14 +288,56 @@ class GamingTheme(BaseTheme):
             if st.sidebar.button("Clear Analysis", key="gaming_theme_clear_analysis"):
                 del st.session_state['analysis_run']
                 st.rerun()
+            
+            # Debug information
+            st.write("Debug: Analysis state is active")
+            
             # Show the gaming_eldenring.gif at the bottom
             eldenring_gif_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'assets', 'gaming', 'gaming_eldenring.gif')
+            st.write(f"Debug: GIF path: {eldenring_gif_path}")
+            st.write(f"Debug: GIF exists: {os.path.exists(eldenring_gif_path)}")
+            
             if os.path.exists(eldenring_gif_path):
-                with open(eldenring_gif_path, 'rb') as f:
-                    gif_base64 = base64.b64encode(f.read()).decode('utf-8')
-                st.markdown(
-                    f'''<div style="width: 100%; margin-top: 30px; padding: 20px 0; text-align: center; background: rgba(0,0,0,0.3); border-top: 2px solid var(--accent-color); border-bottom: 2px solid var(--accent-color);">
-                        <img src="data:image/gif;base64,{gif_base64}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 0 20px var(--accent-color);" />
-                    </div>''',
-                    unsafe_allow_html=True
-                ) 
+                try:
+                    # Create a container for the GIF
+                    with st.container():
+                        # Add some spacing
+                        st.markdown("<br>", unsafe_allow_html=True)
+                        
+                        # Display the GIF using Streamlit's native image display
+                        st.image(
+                            eldenring_gif_path,
+                            caption="Elden Ring Victory Celebration",
+                            use_column_width=True,
+                            clamp=True  # This helps with large images
+                        )
+                        
+                        # Add a styled container around the GIF
+                        st.markdown("""
+                            <style>
+                            .gaming-footer {
+                                background: rgba(0,0,0,0.3);
+                                border-top: 2px solid var(--accent-color);
+                                border-bottom: 2px solid var(--accent-color);
+                                padding: 20px 0;
+                                margin-top: 30px;
+                                text-align: center;
+                            }
+                            </style>
+                            <div class="gaming-footer">
+                                <p style="color: var(--accent-color); font-family: 'Press Start 2P', cursive;">
+                                    Victory Achieved! 🎮
+                                </p>
+                            </div>
+                        """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.error(f"Error displaying GIF: {str(e)}")
+                    # Try to display a static image as fallback
+                    try:
+                        st.image(
+                            os.path.join(os.path.dirname(eldenring_gif_path), 'gaming_analysis.jpg'),
+                            caption="Victory Celebration (Static Image)",
+                            use_column_width=True
+                        )
+                    except Exception as e2:
+                        st.error(f"Error displaying fallback image: {str(e2)}") 
