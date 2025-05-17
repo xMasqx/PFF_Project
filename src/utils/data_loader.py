@@ -157,13 +157,18 @@ class DataLoader:
             df.index = pd.to_datetime(df.index)
         df = df.sort_index()
         
+        # Ensure numeric columns are float32 instead of float64 for better PyArrow compatibility
+        numeric_cols = df.select_dtypes(include=[np.number]).columns
+        for col in numeric_cols:
+            df[col] = df[col].astype('float32')
+        
         # Simple Moving Averages
-        df['SMA_20'] = df['Close'].rolling(window=20).mean()
-        df['SMA_50'] = df['Close'].rolling(window=50).mean()
+        df['SMA_20'] = df['Close'].rolling(window=20).mean().astype('float32')
+        df['SMA_50'] = df['Close'].rolling(window=50).mean().astype('float32')
         
         # Exponential Moving Averages
-        df['EMA_20'] = df['Close'].ewm(span=20, adjust=False).mean()
-        df['EMA_50'] = df['Close'].ewm(span=50, adjust=False).mean()
+        df['EMA_20'] = df['Close'].ewm(span=20, adjust=False).mean().astype('float32')
+        df['EMA_50'] = df['Close'].ewm(span=50, adjust=False).mean().astype('float32')
         
         # Relative Strength Index (RSI)
         delta = df['Close'].diff()
@@ -176,7 +181,7 @@ class DataLoader:
         
         # Calculate RS and RSI
         rs = avg_gain / avg_loss
-        df['RSI'] = 100 - (100 / (1 + rs))
+        df['RSI'] = (100 - (100 / (1 + rs))).astype('float32')
         
         # Moving Average Convergence Divergence (MACD)
         # Calculate the 12 and 26 day EMAs
@@ -184,10 +189,10 @@ class DataLoader:
         ema26 = df['Close'].ewm(span=26, adjust=False).mean()
         
         # Calculate MACD line
-        df['MACD'] = ema12 - ema26
+        df['MACD'] = (ema12 - ema26).astype('float32')
         
         # Calculate Signal line (9-day EMA of MACD)
-        df['Signal_Line'] = df['MACD'].ewm(span=9, adjust=False).mean()
+        df['Signal_Line'] = df['MACD'].ewm(span=9, adjust=False).mean().astype('float32')
         
         # Bollinger Bands
         close_series = df['Close']
@@ -196,9 +201,9 @@ class DataLoader:
         bb_std = close_series.rolling(window=bb_window).std()
         
         # Calculate bands using Series operations
-        df['BB_Middle'] = bb_middle
-        df['BB_Upper'] = bb_middle + (2.0 * bb_std)
-        df['BB_Lower'] = bb_middle - (2.0 * bb_std)
+        df['BB_Middle'] = bb_middle.astype('float32')
+        df['BB_Upper'] = (bb_middle + (2.0 * bb_std)).astype('float32')
+        df['BB_Lower'] = (bb_middle - (2.0 * bb_std)).astype('float32')
         
         # Additional indicators
         # Average True Range (ATR)
@@ -207,13 +212,18 @@ class DataLoader:
         low_close = np.abs(df['Low'] - df['Close'].shift())
         ranges = pd.concat([high_low, high_close, low_close], axis=1)
         true_range = ranges.max(axis=1)
-        df['ATR'] = true_range.rolling(window=14).mean()
+        df['ATR'] = true_range.rolling(window=14).mean().astype('float32')
         
         # On-Balance Volume (OBV)
-        df['OBV'] = (np.sign(df['Close'].diff()) * df['Volume']).fillna(0).cumsum()
+        df['OBV'] = (np.sign(df['Close'].diff()) * df['Volume']).fillna(0).cumsum().astype('float32')
         
-        # Clean up NaN values
+        # Clean up NaN values using bfill and ffill
         df = df.bfill().ffill()
+        
+        # Ensure all numeric columns are float32
+        numeric_cols = df.select_dtypes(include=[np.number]).columns
+        for col in numeric_cols:
+            df[col] = df[col].astype('float32')
         
         return df
     
@@ -250,40 +260,46 @@ class DataLoader:
         """
         df = data.copy()
         
+        # Ensure numeric columns are float32
+        numeric_cols = df.select_dtypes(include=[np.number]).columns
+        for col in numeric_cols:
+            df[col] = df[col].astype('float32')
+        
         # Calculate daily returns
-        df['Daily_Return'] = df['Close'].pct_change()
+        df['Daily_Return'] = df['Close'].pct_change().astype('float32')
         
         # Calculate cumulative returns
-        df['Cumulative_Return'] = (1 + df['Daily_Return']).cumprod() - 1
+        df['Cumulative_Return'] = ((1 + df['Daily_Return']).cumprod() - 1).astype('float32')
         
         # Calculate volatility (20-day rolling standard deviation)
-        df['Volatility'] = df['Daily_Return'].rolling(window=20).std()
+        df['Volatility'] = df['Daily_Return'].rolling(window=20).std().astype('float32')
         
         # Calculate trading volume moving average
-        df['Volume_MA'] = df['Volume'].rolling(window=20).mean()
+        df['Volume_MA'] = df['Volume'].rolling(window=20).mean().astype('float32')
         
         # Calculate price momentum (12-day rate of change)
-        df['Momentum'] = df['Close'].pct_change(periods=12)
+        df['Momentum'] = df['Close'].pct_change(periods=12).astype('float32')
         
         # Calculate price ranges
-        df['Daily_Range'] = (df['High'] - df['Low']) / df['Close']
+        df['Daily_Range'] = ((df['High'] - df['Low']) / df['Close']).astype('float32')
         
         # Calculate technical indicators
         df = self.calculate_technical_indicators(df)
         
         # Prepare correlation data
         numeric_cols = df.select_dtypes(include=[np.number]).columns
-        correlation_data = df[numeric_cols].corr()
+        correlation_data = df[numeric_cols].corr().astype('float32')
         
+        # Ensure all returned DataFrames use float32
         return {
-            'price_data': df[['Close', 'High', 'Low']],
-            'volume_data': df[['Volume', 'Volume_MA']],
-            'returns_data': df[['Daily_Return', 'Cumulative_Return']],
-            'volatility_data': df[['Volatility', 'Daily_Range']],
-            'momentum_data': df[['Momentum', 'RSI']],
-            'technical_indicators': df[['SMA_20', 'SMA_50', 'EMA_20', 'EMA_50', 'MACD', 'Signal_Line']],
+            'price_data': df[['Close', 'High', 'Low']].astype('float32'),
+            'volume_data': df[['Volume', 'Volume_MA']].astype('float32'),
+            'returns_data': df[['Daily_Return', 'Cumulative_Return']].astype('float32'),
+            'volatility_data': df[['Volatility', 'Daily_Range']].astype('float32'),
+            'momentum_data': df[['Momentum', 'RSI']].astype('float32'),
+            'technical_indicators': df[['SMA_20', 'SMA_50', 'EMA_20', 'EMA_50', 'MACD', 'Signal_Line']].astype('float32'),
             'correlation_data': correlation_data,
-            'bollinger_bands': df[['Close', 'BB_Upper', 'BB_Middle', 'BB_Lower']]
+            'bollinger_bands': df[['Close', 'BB_Upper', 'BB_Middle', 'BB_Lower']].astype('float32')
         }
 
 # Create a singleton instance
