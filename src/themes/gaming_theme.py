@@ -4,6 +4,7 @@ import os
 import base64
 import streamlit as st
 from PIL import Image
+import pandas as pd
 
 class GamingTheme(BaseTheme):
     def __init__(self):
@@ -284,18 +285,78 @@ class GamingTheme(BaseTheme):
         """)
 
         # Add clear analysis button and show GIF after analysis
+        st.write("Debug - analysis_run state:", 'analysis_run' in st.session_state)
+        if 'analysis_run' in st.session_state:
+            st.write("Debug - analysis_run value:", st.session_state['analysis_run'])
+        
         if 'analysis_run' in st.session_state and st.session_state['analysis_run']:
             if st.sidebar.button("Clear Analysis", key="gaming_theme_clear_analysis"):
                 del st.session_state['analysis_run']
                 st.rerun()
-            # Show the gaming_eldenring.gif at the bottom
+            
+            # Show the gaming_eldenring.gif at the bottom using Streamlit's native image display
             eldenring_gif_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'assets', 'gaming', 'gaming_eldenring.gif')
+            st.write("Debug - GIF path exists:", os.path.exists(eldenring_gif_path))
+            st.write("Debug - GIF path:", eldenring_gif_path)
+            
             if os.path.exists(eldenring_gif_path):
-                with open(eldenring_gif_path, 'rb') as f:
-                    gif_base64 = base64.b64encode(f.read()).decode('utf-8')
-                st.markdown(
-                    f'''<div style="width: 100%; margin-top: 30px; padding: 20px 0; text-align: center; background: rgba(0,0,0,0.3); border-top: 2px solid var(--accent-color); border-bottom: 2px solid var(--accent-color);">
-                        <img src="data:image/gif;base64,{gif_base64}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 0 20px var(--accent-color);" />
-                    </div>''',
-                    unsafe_allow_html=True
-                ) 
+                try:
+                    # Create a container with custom styling
+                    st.markdown("""
+                        <style>
+                        .gaming-footer {
+                            background: rgba(0,0,0,0.3);
+                            padding: 20px 0;
+                            margin-top: 30px;
+                            border-top: 2px solid var(--accent-color);
+                            border-bottom: 2px solid var(--accent-color);
+                            text-align: center;
+                        }
+                        </style>
+                    """, unsafe_allow_html=True)
+                    
+                    # Create a container for the GIF
+                    with st.container():
+                        st.markdown('<div class="gaming-footer">', unsafe_allow_html=True)
+                        st.write("Debug - Attempting to display GIF...")
+                        # Use Streamlit's image display with optimizations
+                        st.image(
+                            eldenring_gif_path,
+                            use_column_width=True,
+                            output_format="GIF",
+                            clamp=True  # This helps with performance
+                        )
+                        st.markdown('</div>', unsafe_allow_html=True)
+                except Exception as e:
+                    st.error(f"Error displaying GIF: {str(e)}")
+                    st.write("Debug - Full error:", str(e))
+                    # Fallback to a static image if GIF fails
+                    try:
+                        st.image(
+                            os.path.join(os.path.dirname(eldenring_gif_path), 'gaming_analysis.jpg'),
+                            use_column_width=True,
+                            caption="Gaming Theme Footer"
+                        )
+                    except Exception as e2:
+                        st.error(f"Fallback image also failed: {str(e2)}")
+
+                # Model selection
+                model_type = st.sidebar.selectbox(
+                    "Select Model Type",
+                    ["regression", "classification", "clustering"],
+                    key=f"{self.name.lower()}_kragle_model_type"
+                )
+                
+                # Run analysis
+                if st.sidebar.button("Run Analysis", key=f"{self.name.lower()}_kragle_run_analysis"):
+                    st.session_state['analysis_run'] = True
+                    self.run_analysis(data, model_type)
+                    st.rerun()
+
+    def run_analysis(self, data: pd.DataFrame, analysis_type: str = 'regression'):
+        """Run the selected analysis type on the data."""
+        # Set analysis_run state to True
+        st.session_state['analysis_run'] = True
+        
+        # Call parent class run_analysis
+        super().run_analysis(data, analysis_type) 
