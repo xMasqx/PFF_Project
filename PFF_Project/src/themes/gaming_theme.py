@@ -289,6 +289,30 @@ class GamingTheme(BaseTheme):
                 del st.session_state['analysis_run']
                 st.rerun()
             
+            # Add a styled container around the data frame
+            st.markdown("""
+                <style>
+                .gaming-dataframe-container {
+                    background: rgba(0,0,0,0.3);
+                    border-top: 2px solid var(--accent-color);
+                    border-bottom: 2px solid var(--accent-color);
+                    padding: 20px 0;
+                    margin-top: 30px;
+                    text-align: center;
+                }
+                </style>
+            """, unsafe_allow_html=True)
+
+            # Add data frame first
+            if 'stock_data' in st.session_state:
+                df = st.session_state['stock_data']
+                st.dataframe(
+                    df,
+                    use_container_width=True
+                )
+            else:
+                st.info("No data loaded yet. Please load data using the sidebar controls.")
+            
             # Show the gaming_eldenring.gif at the bottom
             eldenring_gif_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'assets', 'gaming', 'gaming_eldenring.gif')
             
@@ -336,30 +360,6 @@ class GamingTheme(BaseTheme):
                         )
                     except Exception as e2:
                         st.error(f"Error displaying fallback image: {str(e2)}")
-
-            # Add a styled container around the data frame
-            st.markdown("""
-                <style>
-                .gaming-dataframe-container {
-                    background: rgba(0,0,0,0.3);
-                    border-top: 2px solid var(--accent-color);
-                    border-bottom: 2px solid var(--accent-color);
-                    padding: 20px 0;
-                    margin-top: 30px;
-                    text-align: center;
-                }
-                </style>
-            """, unsafe_allow_html=True)
-
-            # Add data frame
-            if 'stock_data' in st.session_state:
-                df = st.session_state['stock_data']
-                st.dataframe(
-                    df,
-                    use_container_width=True
-                )
-            else:
-                st.info("No data loaded yet. Please load data using the sidebar controls.")
         else:
             # Add a styled container around the data frame
             st.markdown("""
