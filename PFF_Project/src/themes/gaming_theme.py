@@ -352,11 +352,14 @@ class GamingTheme(BaseTheme):
             """, unsafe_allow_html=True)
 
             # Add data frame
-            df = self.data_frame
-            st.dataframe(
-                df,
-                use_container_width=True
-            )
+            if 'stock_data' in st.session_state:
+                df = st.session_state['stock_data']
+                st.dataframe(
+                    df,
+                    use_container_width=True
+                )
+            else:
+                st.info("No data loaded yet. Please load data using the sidebar controls.")
         else:
             # Add a styled container around the data frame
             st.markdown("""
@@ -373,9 +376,12 @@ class GamingTheme(BaseTheme):
             """, unsafe_allow_html=True)
 
             # Add data frame
-            df = self.data_frame
-            st.dataframe(
-                df,
-                use_container_width=True,
-                height=400
-            ) 
+            if 'stock_data' in st.session_state:
+                df = st.session_state['stock_data']
+                st.dataframe(
+                    df,
+                    use_container_width=True,
+                    height=400
+                )
+            else:
+                st.info("No data loaded yet. Please load data using the sidebar controls.") 
