@@ -308,7 +308,7 @@ class GamingTheme(BaseTheme):
                         st.image(
                             eldenring_gif_path,
                             caption="Elden Ring Victory Celebration",
-                            use_column_width=True,
+                            use_container_width=True,
                             clamp=True  # This helps with large images
                         )
                         
@@ -337,7 +337,50 @@ class GamingTheme(BaseTheme):
                         st.image(
                             os.path.join(os.path.dirname(eldenring_gif_path), 'gaming_analysis.jpg'),
                             caption="Victory Celebration (Static Image)",
-                            use_column_width=True
+                            use_container_width=True
                         )
                     except Exception as e2:
-                        st.error(f"Error displaying fallback image: {str(e2)}") 
+                        st.error(f"Error displaying fallback image: {str(e2)}")
+
+            # Add a styled container around the data frame
+            st.markdown("""
+                <style>
+                .gaming-dataframe-container {
+                    background: rgba(0,0,0,0.3);
+                    border-top: 2px solid var(--accent-color);
+                    border-bottom: 2px solid var(--accent-color);
+                    padding: 20px 0;
+                    margin-top: 30px;
+                    text-align: center;
+                }
+                </style>
+            """, unsafe_allow_html=True)
+
+            # Add data frame
+            df = self.data_frame
+            st.dataframe(
+                df,
+                use_container_width=True
+            )
+        else:
+            # Add a styled container around the data frame
+            st.markdown("""
+                <style>
+                .gaming-dataframe-container {
+                    background: rgba(0,0,0,0.3);
+                    border-top: 2px solid var(--accent-color);
+                    border-bottom: 2px solid var(--accent-color);
+                    padding: 20px 0;
+                    margin-top: 30px;
+                    text-align: center;
+                }
+                </style>
+            """, unsafe_allow_html=True)
+
+            # Add data frame
+            df = self.data_frame
+            st.dataframe(
+                df,
+                use_container_width=True,
+                height=400
+            ) 
